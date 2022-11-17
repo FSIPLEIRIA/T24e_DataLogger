@@ -3,7 +3,7 @@
 volatile float CANbusArray[100];  //Array de dados canbus
 volatile byte DATA[100];
 volatile int ID;
-bool Serial_running = true;  //true or false
+bool Serial_running = false;  //true or false
 unsigned long nowTime, nowTime2;
 String dataMessage;
 
@@ -21,6 +21,7 @@ volatile uint16_t RPM,    TPS,        IAT,            MAP,     CLT,          //0
 void ReadCAN() {  //READ CAN BUS DATA
 
   int packetSize = CAN.parsePacket();
+
   if (packetSize) {
     ID = CAN.packetId();
     for (int i = 0; i < 8; i++) {
@@ -33,8 +34,15 @@ void ReadCAN() {  //READ CAN BUS DATA
         CANbusArray[2] = DATA[3];                   //IAT
         CANbusArray[3] = (DATA[5] << 8) + DATA[4];  //MAP
         CANbusArray[4] = (DATA[7] << 8) + DATA[6];  //CLT
+        /*
+        printf("%f\n",CANbusArray[0]);
+        printf("%f\n",CANbusArray[1]);
+        printf("%f\n",CANbusArray[2]);
+        printf("%f\n",CANbusArray[3]);
+        printf("%f\n",CANbusArray[4]);
+        */
         break;
-
+        
       case 0x601:
         CANbusArray[5] = (DATA[1] << 8) + DATA[0];   //VSPD
         CANbusArray[6] = DATA[2];                    //BARO
@@ -43,7 +51,7 @@ void ReadCAN() {  //READ CAN BUS DATA
         CANbusArray[9] = DATA[5];                    //FUELP
         CANbusArray[10] = (DATA[7] << 8) + DATA[6];  //BATV
         break;
-
+/*
       case 0x602:
         CANbusArray[11] = DATA[0];                   //IGNANG
         CANbusArray[12] = DATA[1];                   //DWELL
@@ -83,6 +91,7 @@ void ReadCAN() {  //READ CAN BUS DATA
         CANbusArray[31] = DATA[2];  //WSRR
         CANbusArray[32] = DATA[3];  //WSRL
         break;
+        */
     }
   }
 }
@@ -117,15 +126,40 @@ void PRINT_CAN() {  //WRITE TO SERIAL MONITOR
     Serial.println(CANbusArray[i]);
   }
   */
+
+  unsigned long nowTime;
+
+  if ((unsigned long)(millis() - nowTime > 50)) {
+/*
+    Serial.println( CANbusArray[0]);
+    Serial.println( CANbusArray[1]);
+    Serial.println( CANbusArray[2]);
+    Serial.println( CANbusArray[3]);
+    Serial.println( CANbusArray[4]);
+   */
+    printf("\r\nID:600------ \r\n RPM:%f \r\n TPS:%f \r\n IAT:%f \r\n MAP:%f \r\n CLT:%f \r\n", CANbusArray[0], CANbusArray[1], CANbusArray[2], CANbusArray[3], CANbusArray[4]);
+    printf("\r\nID:601------ \r\n VSPD:%i \r\n BARO:%i \r\n OILT:%i \r\n OILP:%i \r\n FUELP:%i \r\n BATV:%i \r\n", CANbusArray[5], CANbusArray[6], CANbusArray[7], CANbusArray[8], CANbusArray[9], CANbusArray[10]);
+   /*
+    printf("\r\nID:602------ \r\n IGNANG:%i \r\n DWELL:%i \r\n LAMBDA:%i \r\n LAMCORR:%i \r\n EGT1:%i \r\n EGT2:%i \r\n", CANbusArray[11], CANbusArray[12], CANbusArray[13], CANbusArray[14], CANbusArray[15], CANbusArray[16]);
+    printf("\r\nID:603------ \r\n CBUSLd:%i \r\n ECUTEMP:%i \r\n ETHANOLCONTENT:%i \r\n", CANbusArray[17], CANbusArray[18], CANbusArray[19]);
+    printf("\r\nID:604------ \r\n DBWPOS:%i \r\n DBWTRIGT:%i \r\n BOOSTP:%i \r\n", CANbusArray[20], CANbusArray[21], CANbusArray[22]);
+    printf("\r\nID:607------ \r\n Gear:%i \r\n Gear_Value:%i \r\n ", CANbusArray[23], CANbusArray[24]);
+    printf("\r\nID:700------ \r\n SPOS1:%i \r\n SPOS2:%i \r\n WSFR:%i \r\n WSFL:%i \r\n", CANbusArray[25], CANbusArray[26], CANbusArray[27], CANbusArray[28]);
+    printf("\r\nID:701------ \r\n SPOS3:%i \r\n SPOS4:%i \r\n WSRR:%i \r\n WSRL:%i \r\n", CANbusArray[29], CANbusArray[30], CANbusArray[31], CANbusArray[32]);
+    */
+    nowTime = millis();
+  }
+
   if (Serial_running) {
-    printf("\nID:600------ \n RPM:%f \n TPS:%f \n IAT:%f \n MAP:%f \n CLT:%f \n", CANbusArray[0], CANbusArray[1], CANbusArray[2], CANbusArray[3], CANbusArray[4]);
-    printf("\nID:601------ \n VSPD:%i \n BARO:%i \n OILT:%i \n OILP:%i \n FUELP:%i \n BATV:%i \n", CANbusArray[5], CANbusArray[6], CANbusArray[7], CANbusArray[8], CANbusArray[9], CANbusArray[10]);
-    printf("\nID:602------ \n IGNANG:%i \n DWELL:%i \n LAMBDA:%i \n LAMCORR:%i \n EGT1:%i \n EGT2:%i \n", CANbusArray[11], CANbusArray[12], CANbusArray[13], CANbusArray[14], CANbusArray[15], CANbusArray[16]);
-    printf("\nID:603------ \n CBUSLd:%i \n ECUTEMP:%i \n ETHANOLCONTENT:%i \n", CANbusArray[17], CANbusArray[18], CANbusArray[19]);
-    printf("\nID:604------ \n DBWPOS:%i \n DBWTRIGT:%i \n BOOSTP:%i \n", CANbusArray[20], CANbusArray[21], CANbusArray[22]);
-    printf("\nID:607------ \n Gear:%i \n Gear_Value:%i \n ", CANbusArray[23], CANbusArray[24]);
-    printf("\nID:700------ \n SPOS1:%i \n SPOS2:%i \n WSFR:%i \n WSFL:%i \n", CANbusArray[25], CANbusArray[26], CANbusArray[27], CANbusArray[28]);
-    printf("\nID:701------ \n SPOS3:%i \n SPOS4:%i \n WSRR:%i \n WSRL:%i \n", CANbusArray[29], CANbusArray[30], CANbusArray[31], CANbusArray[32]);
+
+    printf("\r\nID:600------ \r\n RPM:%f \r\n TPS:%f \r\n IAT:%f \r\n MAP:%f \r\n CLT:%f \r\n", CANbusArray[0], CANbusArray[1], CANbusArray[2], CANbusArray[3], CANbusArray[4]);
+    printf("\r\nID:601------ \r\n VSPD:%i \r\n BARO:%i \r\n OILT:%i \r\n OILP:%i \r\n FUELP:%i \r\n BATV:%i \r\n", CANbusArray[5], CANbusArray[6], CANbusArray[7], CANbusArray[8], CANbusArray[9], CANbusArray[10]);
+    printf("\r\nID:602------ \r\n IGNANG:%i \r\n DWELL:%i \r\n LAMBDA:%i \r\n LAMCORR:%i \r\n EGT1:%i \r\n EGT2:%i \r\n", CANbusArray[11], CANbusArray[12], CANbusArray[13], CANbusArray[14], CANbusArray[15], CANbusArray[16]);
+    printf("\r\nID:603------ \r\n CBUSLd:%i \r\n ECUTEMP:%i \r\n ETHANOLCONTENT:%i \r\n", CANbusArray[17], CANbusArray[18], CANbusArray[19]);
+    printf("\r\nID:604------ \r\n DBWPOS:%i \r\n DBWTRIGT:%i \r\n BOOSTP:%i \r\n", CANbusArray[20], CANbusArray[21], CANbusArray[22]);
+    printf("\r\nID:607------ \r\n Gear:%i \r\n Gear_Value:%i \r\n ", CANbusArray[23], CANbusArray[24]);
+    printf("\r\nID:700------ \r\n SPOS1:%i \r\n SPOS2:%i \r\n WSFR:%i \r\n WSFL:%i \r\n", CANbusArray[25], CANbusArray[26], CANbusArray[27], CANbusArray[28]);
+    printf("\r\nID:701------ \r\n SPOS3:%i \r\n SPOS4:%i \r\n WSRR:%i \r\n WSRL:%i \r\n", CANbusArray[29], CANbusArray[30], CANbusArray[31], CANbusArray[32]);
   }
 }
 void appendFile(fs::FS &fs, const char *path, const char *message) {  //DON'T MODIFY THIS FUNCTION

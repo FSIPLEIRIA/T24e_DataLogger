@@ -17,6 +17,8 @@ void setup() {
 }
 
 void loop() {
+
+
   logSDCard();  //WRITE DATA 20HZ
   ReadCAN();    //READ CAN (LOOP SPEED)
   PRINT_CAN();  //PRINT CAN BUS VALUES IF TRUE
