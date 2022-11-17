@@ -6,7 +6,6 @@
 #include "FS.h"
 #include "SD_MMC.h"
 
-
 void ReadCAN();
 void InitSD();
 void PRINT_CAN();
